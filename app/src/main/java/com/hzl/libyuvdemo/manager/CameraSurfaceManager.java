@@ -11,11 +11,14 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Handler;
 import android.os.Looper;
+import android.widget.Toast;
 
 import com.hzl.libyuvdemo.MainApplication;
+import com.hzl.libyuvdemo.contacts.Contacts;
 import com.hzl.libyuvdemo.listener.CameraPictureListener;
 import com.hzl.libyuvdemo.listener.CameraYUVDataListener;
 import com.hzl.libyuvdemo.util.CameraUtil;
+import com.hzl.libyuvdemo.util.SPUtil;
 import com.libyuv.util.YuvUtil;
 
 import java.io.ByteArrayOutputStream;
@@ -35,9 +38,13 @@ public class CameraSurfaceManager implements SensorEventListener, CameraYUVDataL
     private boolean isRunning;
     private CameraPictureListener listener;
 
-    //输出的宽高
-    private int outWidth = 720;
-    private int outHeight = 1280;
+
+    private int scaleWidth;
+    private int scaleHeight;
+    private int cropStartX;
+    private int cropStartY;
+    private int cropWidth;
+    private int cropHeight;
 
     //传感器需要，这边使用的是重力传感器
     private SensorManager mSensorManager;
@@ -64,7 +71,9 @@ public class CameraSurfaceManager implements SensorEventListener, CameraYUVDataL
     }
 
     public void takePicture() {
-        isTakingPicture = true;
+        if (isSupport()) {
+            isTakingPicture = true;
+        }
     }
 
     public void onResume() {
@@ -91,24 +100,22 @@ public class CameraSurfaceManager implements SensorEventListener, CameraYUVDataL
                 @Override
                 public void run() {
                     //进行yuv数据的缩放，旋转镜像缩放等操作
-                    final byte[] dstData = new byte[outWidth * outHeight * 3 / 2];
+                    final byte[] dstData = new byte[scaleWidth * scaleHeight * 3 / 2];
                     final int morientation = mCameraUtil.getMorientation();
-                    YuvUtil.compressYUV(srcData, mCameraUtil.getCameraWidth(), mCameraUtil.getCameraHeight(), dstData, outHeight, outWidth, 0, morientation, morientation == 270);
+                    YuvUtil.compressYUV(srcData, mCameraUtil.getCameraWidth(), mCameraUtil.getCameraHeight(), dstData, scaleHeight, scaleWidth, 0, morientation, morientation == 270);
 
                     //进行yuv数据裁剪的操作
-                    final int outSrcWidth = outWidth;
-                    final int outSrcHeight = outWidth;
-                    final byte[] cropData = new byte[outSrcWidth * outSrcHeight * 3 / 2];
-                    YuvUtil.cropYUV(dstData, outWidth, outHeight, cropData, outSrcWidth, outSrcHeight, 0, (outHeight - outSrcHeight) / 2);
+                    final byte[] cropData = new byte[cropWidth * cropHeight * 3 / 2];
+                    YuvUtil.cropYUV(dstData, scaleWidth, scaleHeight, cropData, cropWidth, cropHeight, cropStartX, cropStartY);
 
                     //这里将yuvi420转化为nv21，因为yuvimage只能操作nv21和yv12，为了演示方便，这里做一步转化的操作
-                    final byte[] nv21Data = new byte[outSrcWidth * outSrcHeight * 3 / 2];
-                    YuvUtil.yuvI420ToNV21(cropData, nv21Data, outSrcWidth, outSrcHeight);
+                    final byte[] nv21Data = new byte[cropWidth * cropHeight * 3 / 2];
+                    YuvUtil.yuvI420ToNV21(cropData, nv21Data, cropWidth, cropHeight);
 
                     //这里采用yuvImage将yuvi420转化为图片，当然用libyuv也是可以做到的，这里主要介绍libyuv的裁剪，旋转，缩放，镜像的操作
-                    YuvImage yuvImage = new YuvImage(nv21Data, ImageFormat.NV21, outSrcWidth, outSrcHeight, null);
+                    YuvImage yuvImage = new YuvImage(nv21Data, ImageFormat.NV21, cropWidth, cropHeight, null);
                     ByteArrayOutputStream fOut = new ByteArrayOutputStream();
-                    yuvImage.compressToJpeg(new Rect(0, 0, outSrcWidth, outSrcHeight), 100, fOut);
+                    yuvImage.compressToJpeg(new Rect(0, 0, cropWidth, cropHeight), 100, fOut);
 
                     //将byte生成bitmap
                     byte[] bitData = fOut.toByteArray();
@@ -156,5 +163,24 @@ public class CameraSurfaceManager implements SensorEventListener, CameraYUVDataL
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
+    }
+
+    //主要是对裁剪的判断
+    public boolean isSupport() {
+        scaleWidth = (int) SPUtil.get(Contacts.SCALE_WIDTH, 720);
+        scaleHeight = (int) SPUtil.get(Contacts.SCALE_HEIGHT, 1280);
+        cropWidth = (int) SPUtil.get(Contacts.CROP_WIDTH, 720);
+        cropHeight = (int) SPUtil.get(Contacts.CROP_HEIGHT, 720);
+        cropStartX = (int) SPUtil.get(Contacts.CROP_START_X, 0);
+        cropStartY = (int) SPUtil.get(Contacts.CROP_START_Y, 0);
+        if (cropStartX % 2 != 0 || cropStartY % 2 != 0) {
+            Toast.makeText(MainApplication.getInstance(), "裁剪的开始位置必须为偶数", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (cropStartX + cropWidth > scaleWidth || cropStartY + cropHeight > scaleHeight) {
+            Toast.makeText(MainApplication.getInstance(), "裁剪区域超出范围", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
     }
 }

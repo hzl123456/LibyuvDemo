@@ -6,6 +6,7 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 
 import com.hzl.libyuvdemo.MainApplication;
+import com.hzl.libyuvdemo.contacts.Contacts;
 
 import java.io.IOException;
 import java.util.List;
@@ -138,6 +139,7 @@ public class CameraUtil {
 
         //这边是设置旋转的
         morientation = setCameraDisplayOrientation(cameraId);
+        SPUtil.put(Contacts.CAMERA_Morientation, morientation);
 
         Camera.Parameters parameters = mCamera.getParameters();
         choosePreviewSize(parameters, cameraWidth, cameraHeight);
@@ -156,6 +158,8 @@ public class CameraUtil {
         Camera.Size size = mCamera.getParameters().getPreviewSize();
         cameraWidth = size.width;
         cameraHeight = size.height;
+        SPUtil.put(Contacts.CAMERA_WIDTH, cameraWidth);
+        SPUtil.put(Contacts.CAMERA_HEIGHT, cameraHeight);
     }
 
     public void releaseCamera() {

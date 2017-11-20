@@ -11,7 +11,6 @@
         android:layout_height="match_parent"
         android:layout_centerInParent="true" />
 
-
     <ImageView
         android:id="@+id/btn_camera"
         android:layout_width="wrap_content"
@@ -39,15 +38,137 @@
         android:clickable="true"
         android:visibility="gone" />
 
-    <TextView
-        android:id="@+id/tv_image"
+    <LinearLayout
+        android:id="@+id/layout_out"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:padding="10dp"
-        android:text="图片大小:100*100"
-        android:textColor="#ffffff"
-        android:visibility="gone" />
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/tv_camera_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="摄像头预览大小:1920*1080\n旋转的角度:90度"
+            android:textColor="#ffffff" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="裁剪前大小:"
+                android:textColor="#ffffff" />
+
+            <EditText
+                android:id="@+id/et_scale_width"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:gravity="center"
+                android:inputType="number"
+                android:text="720"
+                android:textColor="#ffffff"
+                android:textSize="14dp" />
+
+            <TextView
+                android:id="@+id/tv_scale_height"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="*1280"
+                android:textColor="#ffffff" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="裁剪开始位置:X:"
+                android:textColor="#ffffff" />
+
+            <EditText
+                android:id="@+id/et_crop_start_x"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:gravity="center"
+                android:inputType="number"
+                android:text="0"
+                android:textColor="#ffffff"
+                android:textSize="14dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=",Y:"
+                android:textColor="#ffffff" />
+
+            <EditText
+                android:id="@+id/et_crop_start_y"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:gravity="center"
+                android:inputType="number"
+                android:text="0"
+                android:textColor="#ffffff"
+                android:textSize="14dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="裁剪后大小:"
+                android:textColor="#ffffff" />
+
+            <EditText
+                android:id="@+id/et_crop_width"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:gravity="center"
+                android:inputType="number"
+                android:text="540"
+                android:textColor="#ffffff"
+                android:textSize="14dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="*"
+                android:textColor="#ffffff" />
+
+            <EditText
+                android:id="@+id/et_crop_height"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:gravity="center"
+                android:inputType="number"
+                android:text="540"
+                android:textColor="#ffffff"
+                android:textSize="14dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
 
     <ImageView
         android:id="@+id/btn_close"
