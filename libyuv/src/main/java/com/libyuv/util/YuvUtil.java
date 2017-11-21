@@ -26,7 +26,6 @@ public class YuvUtil {
      **/
     public static native void compressYUV(byte[] src, int width, int height, byte[] dst, int dst_width, int dst_height, int mode, int degree, boolean isMirror);
 
-
     /**
      * yuv数据的裁剪操作
      *
@@ -41,8 +40,13 @@ public class YuvUtil {
      **/
     public static native void cropYUV(byte[] src, int width, int height, byte[] dst, int dst_width, int dst_height, int left, int top);
 
-
-    public static native void yuvI420ToNV21(byte[] i420Src,byte[] nv21Src,int width,int height);
-
-
+    /**
+     * 将I420转化为NV21
+     *
+     * @param i420Src 原始I420数据
+     * @param nv21Src 转化后的NV21数据
+     * @param width   输出的宽
+     * @param width   输出的高
+     **/
+    public static native void yuvI420ToNV21(byte[] i420Src, byte[] nv21Src, int width, int height);
 }

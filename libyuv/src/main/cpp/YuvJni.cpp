@@ -58,6 +58,7 @@ void rotateI420(jbyte *src_i420_data, jint width, jint height, jbyte *dst_i420_d
     jbyte *dst_i420_u_data = dst_i420_data + src_i420_y_size;
     jbyte *dst_i420_v_data = dst_i420_data + src_i420_y_size + src_i420_u_size;
 
+    //要注意这里的width和height在旋转之后是相反的
     if (degree == libyuv::kRotate90 || degree == libyuv::kRotate270) {
         libyuv::I420Rotate((const uint8 *) src_i420_y_data, width,
                            (const uint8 *) src_i420_u_data, width >> 1,
