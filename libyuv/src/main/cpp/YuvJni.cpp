@@ -14,12 +14,6 @@ JNIEXPORT void JNI_OnUnload(JavaVM *jvm, void *reserved) {
     free(Src_i420_data_rotate);
 }
 
-void init(jint width, jint height, jint dst_width, jint dst_height) {
-    Src_i420_data = (jbyte *) malloc(sizeof(jbyte) * width * height * 3 / 2);
-    Src_i420_data_scale = (jbyte *) malloc(sizeof(jbyte) * dst_width * dst_height * 3 / 2);
-    Src_i420_data_rotate = (jbyte *) malloc(sizeof(jbyte) * dst_width * dst_height * 3 / 2);
-}
-
 void scaleI420(jbyte *src_i420_data, jint width, jint height, jbyte *dst_i420_data, jint dst_width,
                jint dst_height, jint mode) {
 
@@ -115,15 +109,21 @@ void nv21ToI420(jbyte *src_nv21_data, jint width, jint height, jbyte *src_i420_d
 
 extern "C"
 JNIEXPORT void JNICALL
+Java_com_libyuv_util_YuvUtil_init(JNIEnv *env, jclass type, jint width, jint height, jint dst_width,
+                                  jint dst_height) {
+    Src_i420_data = (jbyte *) malloc(sizeof(jbyte) * width * height * 3 / 2);
+    Src_i420_data_scale = (jbyte *) malloc(sizeof(jbyte) * dst_width * dst_height * 3 / 2);
+    Src_i420_data_rotate = (jbyte *) malloc(sizeof(jbyte) * dst_width * dst_height * 3 / 2);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
 Java_com_libyuv_util_YuvUtil_compressYUV(JNIEnv *env, jclass type,
                                          jbyteArray src_, jint width,
                                          jint height, jbyteArray dst_,
                                          jint dst_width, jint dst_height,
                                          jint mode, jint degree,
                                          jboolean isMirror) {
-    //为中间操作需要的分配空间
-    init(width, height, dst_width, dst_height);
-
     jbyte *Src_data = env->GetByteArrayElements(src_, NULL);
     jbyte *Dst_data = env->GetByteArrayElements(dst_, NULL);
     //nv21转化为i420

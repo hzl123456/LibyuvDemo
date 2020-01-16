@@ -12,6 +12,17 @@ public class YuvUtil {
     }
 
     /**
+     * 初始化
+     *
+     * @param width      原始的宽
+     * @param height     原始的高
+     * @param dst_width  输出的宽
+     * @param dst_height 输出的高
+     **/
+    public static native void init(int width, int height, int dst_width, int dst_height);
+
+
+    /**
      * YUV数据的基本的处理
      *
      * @param src        原始数据

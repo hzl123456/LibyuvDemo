@@ -1,9 +1,9 @@
 package com.hzl.libyuvdemo;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.Editable;
@@ -24,9 +24,7 @@ import com.hzl.libyuvdemo.util.SPUtil;
 
 public class MainActivity extends Activity implements View.OnClickListener, CameraPictureListener {
 
-    private final int REQUEST_CODE_PERMISSIONS = 10;
     private CameraSurfaceManager manager;
-    private CameraSurfaceView mSurfaceView;
     private ImageView mBtnCamera;
     private ImageView mBtnPicture;
     private ImageView mBtnClose;
@@ -45,22 +43,19 @@ public class MainActivity extends Activity implements View.OnClickListener, Came
         super.onCreate(savedInstanceState);
         MainApplication.setCurrentActivity(this);
         //设置底部虚拟状态栏为透明，并且可以充满，4.4以上才有
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-        }
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         //权限申请使用
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            final String[] PERMISSIONS = new String[]{Manifest.permission.CAMERA};
-            PermissionsUtils.checkAndRequestMorePermissions(this, PERMISSIONS, REQUEST_CODE_PERMISSIONS,
-                    new PermissionsUtils.PermissionRequestSuccessCallBack() {
+        final String[] PERMISSIONS = new String[]{Manifest.permission.CAMERA};
+        int REQUEST_CODE_PERMISSIONS = 10;
+        PermissionsUtils.checkAndRequestMorePermissions(this, PERMISSIONS, REQUEST_CODE_PERMISSIONS,
+                new PermissionsUtils.PermissionRequestSuccessCallBack() {
 
-                        @Override
-                        public void onHasPermission() {
-                            setContentView(R.layout.activity_main);
-                            initView();
-                        }
-                    });
-        }
+                    @Override
+                    public void onHasPermission() {
+                        setContentView(R.layout.activity_main);
+                        initView();
+                    }
+                });
     }
 
     @Override
@@ -73,20 +68,20 @@ public class MainActivity extends Activity implements View.OnClickListener, Came
     }
 
     private void initView() {
-        mSurfaceView = (CameraSurfaceView) findViewById(R.id.camera_surface);
-        mBtnCamera = (ImageView) findViewById(R.id.btn_camera);
-        mBtnPicture = (ImageView) findViewById(R.id.btn_take_picture);
-        mBtnClose = (ImageView) findViewById(R.id.btn_close);
-        ivImage = (ImageView) findViewById(R.id.iv_image);
+        CameraSurfaceView mSurfaceView = findViewById(R.id.camera_surface);
+        mBtnCamera = findViewById(R.id.btn_camera);
+        mBtnPicture = findViewById(R.id.btn_take_picture);
+        mBtnClose = findViewById(R.id.btn_close);
+        ivImage = findViewById(R.id.iv_image);
 
         //图片的相关信息
-        tvCameraInfo = (TextView) findViewById(R.id.tv_camera_info);
-        tvScaleHeight = (TextView) findViewById(R.id.tv_scale_height);
-        etScaleWidth = (EditText) findViewById(R.id.et_scale_width);
-        etCropStartX = (EditText) findViewById(R.id.et_crop_start_x);
-        etCropStartY = (EditText) findViewById(R.id.et_crop_start_y);
-        etCropWidth = (EditText) findViewById(R.id.et_crop_width);
-        etCropHeight = (EditText) findViewById(R.id.et_crop_height);
+        tvCameraInfo = findViewById(R.id.tv_camera_info);
+        tvScaleHeight = findViewById(R.id.tv_scale_height);
+        etScaleWidth = findViewById(R.id.et_scale_width);
+        etCropStartX = findViewById(R.id.et_crop_start_x);
+        etCropStartY = findViewById(R.id.et_crop_start_y);
+        etCropWidth = findViewById(R.id.et_crop_width);
+        etCropHeight = findViewById(R.id.et_crop_height);
         //edittext输入的监听
         editTextWatch();
 
@@ -98,6 +93,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Came
         manager.setCameraPictureListener(this);
     }
 
+    @SuppressLint("DefaultLocale")
     private void initCameraInfo() {
         //摄像头预览设置
         int width = (int) SPUtil.get(Contacts.CAMERA_WIDTH, 0);

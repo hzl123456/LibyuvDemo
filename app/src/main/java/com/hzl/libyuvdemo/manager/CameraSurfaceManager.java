@@ -38,7 +38,8 @@ public class CameraSurfaceManager implements SensorEventListener, CameraYUVDataL
     private boolean isRunning;
     private CameraPictureListener listener;
 
-
+    private int cameraWidth;
+    private int cameraHeight;
     private int scaleWidth;
     private int scaleHeight;
     private int cropStartX;
@@ -102,7 +103,7 @@ public class CameraSurfaceManager implements SensorEventListener, CameraYUVDataL
                     //进行yuv数据的缩放，旋转镜像缩放等操作
                     final byte[] dstData = new byte[scaleWidth * scaleHeight * 3 / 2];
                     final int morientation = mCameraUtil.getMorientation();
-                    YuvUtil.compressYUV(srcData, mCameraUtil.getCameraWidth(), mCameraUtil.getCameraHeight(), dstData, scaleHeight, scaleWidth, 0, morientation, morientation == 270);
+                    YuvUtil.compressYUV(srcData, cameraWidth, cameraHeight, dstData, scaleHeight, scaleWidth, 0, morientation, morientation == 270);
 
                     //进行yuv数据裁剪的操作
                     final byte[] cropData = new byte[cropWidth * cropHeight * 3 / 2];
@@ -166,13 +167,32 @@ public class CameraSurfaceManager implements SensorEventListener, CameraYUVDataL
     }
 
     //主要是对裁剪的判断
-    public boolean isSupport() {
-        scaleWidth = (int) SPUtil.get(Contacts.SCALE_WIDTH, 720);
-        scaleHeight = (int) SPUtil.get(Contacts.SCALE_HEIGHT, 1280);
+    private boolean isSupport() {
         cropWidth = (int) SPUtil.get(Contacts.CROP_WIDTH, 720);
         cropHeight = (int) SPUtil.get(Contacts.CROP_HEIGHT, 720);
         cropStartX = (int) SPUtil.get(Contacts.CROP_START_X, 0);
         cropStartY = (int) SPUtil.get(Contacts.CROP_START_Y, 0);
+
+        int cameraWidth = mCameraUtil.getCameraWidth();
+        int cameraHeight = mCameraUtil.getCameraHeight();
+        int scaleWidth = (int) SPUtil.get(Contacts.SCALE_WIDTH, 720);
+        int scaleHeight = (int) SPUtil.get(Contacts.SCALE_HEIGHT, 1280);
+
+        // 初始化，输入输出宽高不变的情况下只需要初始化一次
+        if (this.cameraWidth != cameraWidth || this.cameraHeight != cameraHeight || this.scaleWidth != scaleWidth || this.scaleHeight != scaleHeight) {
+            YuvUtil.init(cameraWidth, cameraHeight, scaleHeight, scaleWidth);
+            this.cameraWidth = cameraWidth;
+            this.cameraHeight = cameraHeight;
+            this.scaleWidth = scaleWidth;
+            this.scaleHeight = scaleHeight;
+            MainApplication.getCurrentActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(MainApplication.getInstance(), "修改了", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
         if (cropStartX % 2 != 0 || cropStartY % 2 != 0) {
             Toast.makeText(MainApplication.getInstance(), "裁剪的开始位置必须为偶数", Toast.LENGTH_SHORT).show();
             return false;
