@@ -185,12 +185,6 @@ public class CameraSurfaceManager implements SensorEventListener, CameraYUVDataL
             this.cameraHeight = cameraHeight;
             this.scaleWidth = scaleWidth;
             this.scaleHeight = scaleHeight;
-            MainApplication.getCurrentActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(MainApplication.getInstance(), "修改了", Toast.LENGTH_SHORT).show();
-                }
-            });
         }
 
         if (cropStartX % 2 != 0 || cropStartY % 2 != 0) {
